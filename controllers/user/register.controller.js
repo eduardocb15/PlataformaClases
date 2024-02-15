@@ -1,4 +1,5 @@
 import randomstring from "randomstring";
+import bcrypt from "bcrypt";
 import validateSchema from "../../helpers/validator.helper.js";
 import schema from "../../schemas/user/register.schema.js";
 import userService from "../../services/user/index.service.js";
@@ -10,7 +11,13 @@ const main = async (req, res, next) => {
     const { email, username, password } = req.body;
     const registrationCode = randomstring.generate(30);
 
-    await userService.register(username, password, email, registrationCode);
+    const passwordEncrypted = await bcrypt.hash(password, 5);
+    await userService.register(
+      username,
+      passwordEncrypted,
+      email,
+      registrationCode
+    );
 
     res.send({
       status: "success",
